@@ -4,6 +4,8 @@ NUGET
     FSharp.Core (4.0.0.1)
     MathNet.Numerics (3.9.0)
       TaskParallelLibrary (>= 1.0.2856.0) - framework: net35
+    MathNet.Numerics.Data.Text (3.1.1)
+      MathNet.Numerics (>= 3.0.0)
     MathNet.Numerics.FSharp (3.9.0)
       FSharp.Core (>= 3.1.2.5)
       MathNet.Numerics (3.9.0)
