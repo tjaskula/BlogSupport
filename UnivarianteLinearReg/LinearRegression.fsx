@@ -4,8 +4,12 @@
 
 #I "../packages/MathNet.Numerics/lib/net40/"
 
+open System.IO
+open System.Globalization
 open MathNet.Numerics.LinearAlgebra
 open MathNet.Numerics.Data.Text
 
-let data = DelimitedReader.Read<double>("data.csv", false, ",", false)
-__SOURCE_DIRECTORY__
+let dataCulture = CultureInfo("en-US")
+let dataPath = Path.Combine(__SOURCE_DIRECTORY__, "UnivarianteLinearReg/data.csv")
+// loads a matrix of 97x2
+let data = DelimitedReader.Read<double>(dataPath, false, ",", false, dataCulture)
