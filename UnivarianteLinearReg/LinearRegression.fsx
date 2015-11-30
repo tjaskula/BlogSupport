@@ -13,3 +13,6 @@ let dataCulture = CultureInfo("en-US")
 let dataPath = Path.Combine(__SOURCE_DIRECTORY__, "UnivarianteLinearReg/data.csv")
 // loads a matrix of 97x2
 let data = DelimitedReader.Read<double>(dataPath, false, ",", false, dataCulture)
+let x = data.Column(0)
+let y = data.Column(1)
+let m = y.Count
