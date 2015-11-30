@@ -1,4 +1,6 @@
 source https://nuget.org/api/v2
+nuget FSharp.Charting.Gtk
 nuget FSharp.Core
 nuget MathNet.Numerics.Data.Text
 nuget MathNet.Numerics.FSharp
+nuget XPlot.GoogleCharts
