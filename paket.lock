@@ -1,6 +1,7 @@
 NUGET
   remote: https://nuget.org/api/v2
   specs:
+    FSharp.Charting (0.90.13)
     FSharp.Charting.Gtk (0.90.12)
     FSharp.Core (4.0.0.1)
     Google.DataTable.Net.Wrapper (3.1.2)

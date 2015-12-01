@@ -1,4 +1,5 @@
 source https://nuget.org/api/v2
+nuget FSharp.Charting
 nuget FSharp.Charting.Gtk
 nuget FSharp.Core
 nuget MathNet.Numerics.Data.Text
