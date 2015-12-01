@@ -4,13 +4,9 @@
 #r "../packages/XPlot.GoogleCharts/lib/net45/XPlot.GoogleCharts.dll"
 #r "../packages/Google.DataTable.Net.Wrapper/lib/Google.DataTable.Net.Wrapper.dll"
 #r "../packages/Newtonsoft.Json/lib/net45/Newtonsoft.Json.dll"
-//#r "../packages/FSharp.Charting/lib/net40/FSharp.Charting.dll"
 #r "../packages/Suave/lib/net40/Suave.dll"
 
 #I "../packages/MathNet.Numerics/lib/net40/"
-//#I "../packages/FSharp.Charting.Gtk/lib/net40/"
-//#I "../packages/FSharp.Charting.Gtk/"
-//#load "FSharp.Charting.Gtk.fsx"
 #I "../packages/XPlot.GoogleCharts/lib/net45/"
 #I "../packages/Google.DataTable.Net.Wrapper/lib/"
 #I "../packages/Newtonsoft.Json/lib/net45/"
@@ -47,11 +43,6 @@ let data = DelimitedReader.Read<double>(dataPath, false, ",", false, dataCulture
 let x = data.Column(0)
 let y = data.Column(1)
 let m = y.Count
-
-// print scatter plot
-let chartPoints = data.ToArray()
-                  |> Seq.cast<double>
-//Chart.Point chartPoints
 
 
 // Draw scatter plot  of points
