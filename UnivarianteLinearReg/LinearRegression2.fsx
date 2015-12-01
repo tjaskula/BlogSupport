@@ -4,23 +4,23 @@
 #r "../packages/XPlot.GoogleCharts/lib/net45/XPlot.GoogleCharts.dll"
 #r "../packages/Google.DataTable.Net.Wrapper/lib/Google.DataTable.Net.Wrapper.dll"
 #r "../packages/Newtonsoft.Json/lib/net45/Newtonsoft.Json.dll"
-//#r "../packages/FSharp.Charting/lib/net40/FSharp.Charting.dll"
+#r "../packages/FSharp.Charting/lib/net40/FSharp.Charting.dll"
 #r "../packages/Suave/lib/net40/Suave.dll"
 
 #I "../packages/MathNet.Numerics/lib/net40/"
-//#I "../packages/FSharp.Charting.Gtk/lib/net40/"
-//#I "../packages/FSharp.Charting.Gtk/"
-//#load "FSharp.Charting.Gtk.fsx"
-#I "../packages/XPlot.GoogleCharts/lib/net45/"
-#I "../packages/Google.DataTable.Net.Wrapper/lib/"
-#I "../packages/Newtonsoft.Json/lib/net45/"
+#I "../packages/FSharp.Charting.Gtk/lib/net40/"
+#I "../packages/FSharp.Charting.Gtk/"
+#load "FSharp.Charting.Gtk.fsx"
+//#I "../packages/XPlot.GoogleCharts/lib/net45/"
+//#I "../packages/Google.DataTable.Net.Wrapper/lib/"
+//#I "../packages/Newtonsoft.Json/lib/net45/"
 
 open System
 open System.IO
 open System.Globalization
 
-//open FSharp.Charting
-open XPlot.GoogleCharts
+open FSharp.Charting
+//open XPlot.GoogleCharts
 
 open MathNet.Numerics.LinearAlgebra
 open MathNet.Numerics.Data.Text
@@ -59,15 +59,26 @@ let rnd = new System.Random()
 let next() = rnd.NextDouble() * rnd.NextDouble()
 let points = [ for i in 0 .. 100 -> next(), next() ]
 
+Chart.Point points
+//let googleChart = points
+//                  |> Chart.Scatter
+//
+//let template = Path.Combine(__SOURCE_DIRECTORY__, "web/test.html")
+//let html = File.ReadAllText(template)
+////let chartHtml = html.Replace("[BODY]", googleChart.InlineHtml)
+//
+//let app = OK(html)
+//
+//let cts = startServer app
+//stopServer cts
 
-let googleChart = points
-                  |> Chart.Scatter
+let countryData =
+    [ "Africa", 1033043;
+      "Asia", 4166741;
+      "Europe", 732759;
+      "South America", 588649;
+      "North America", 351659;
+      "Oceania", 35838  ]
 
-let template = Path.Combine(__SOURCE_DIRECTORY__, "web/test.html")
-let html = File.ReadAllText(template)
-//let chartHtml = html.Replace("[BODY]", googleChart.InlineHtml)
 
-let app = OK(html)
-
-let cts = startServer app
-stopServer cts
+Chart.Bar countryData
