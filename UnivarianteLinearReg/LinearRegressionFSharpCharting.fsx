@@ -33,11 +33,50 @@ Chart.Point(points)
     .WithMarkers(Style=ChartTypes.MarkerStyle.Cross, Color=Drawing.Color.Red, Size=7)
 
 
-let theta = vector [ 0.0; 0.0; ]
+let theta = (vector [ 0.0; 0.0; ]).ToColumnMatrix()
 let xIntercept = x.InsertColumn(0, (Vector<double>.Build.Dense(m, 1.0)))
 let iterations = 1500
 let alpha = 0.01
 
-let h = xIntercept * theta.ToColumnMatrix()
-let squaredErrors = h.Subtract(y).PointwisePower(2.0);
-let j = (1.0 / (2.0 * (m|> double))) * squaredErrors.ColumnSums();
+// the cost function
+let computeCost (x : Matrix<double>) (y : Matrix<double>) (theta : Matrix<float>) =
+    let h = xIntercept * theta
+    let squaredErrors = h.Subtract(y).PointwisePower(2.0);
+    let j = (1.0 / (2.0 * (m|> double))) * squaredErrors.ColumnSums();
+    j
+
+let cost = computeCost xIntercept y theta
+printfn "The intitial cost is: %f" (cost.[0])
+
+// gradient descent
+let gradientDescent (x : Matrix<double>) (y : Matrix<double>) (theta : Matrix<float>) alpha num_iters =
+    let m = y.RowCount |> float
+    let currentIter = 1
+    let rec walkGradient (theta : Matrix<float>) costH currentIter =
+        if currentIter <= num_iters then
+            let h = x * theta
+            let gradient = alpha * (1.0 / m) * (x.Transpose() * (h.Subtract(y)))
+            let newTheta = theta - gradient
+            let cost = computeCost x y newTheta
+            let newCostHistory = costH @ [cost.[0]]
+            walkGradient newTheta newCostHistory (currentIter + 1)
+        else
+           theta, costH
+    walkGradient theta [] currentIter
+
+let optimizedThetaCostHistory = gradientDescent xIntercept y theta alpha iterations
+let optimizedTheta = fst optimizedThetaCostHistory
+printfn "Theta found by gradient descent: %f %f" (optimizedTheta.[0, 0]) (optimizedTheta.[1, 0])
+
+
+// print scatter plot
+let linearRegression = xIntercept * optimizedTheta
+let linearRegressionLine =  Array.zip (xIntercept.Column(1).ToArray()) (linearRegression.ToColumnWiseArray()) |> Seq.ofArray
+Chart.Combine  [
+                 Chart.Point(points, Name = "Training Data").WithMarkers(Style=ChartTypes.MarkerStyle.Cross, Color=Drawing.Color.Red, Size=7)
+
+                 Chart.Line(linearRegressionLine, Name = "Linear Regression").WithStyling(Color=Drawing.Color.Blue)
+               ]
+               |> Chart.WithXAxis(Title="Population of City in 10,000s", Min=4.0, Max=24.0)
+               |> Chart.WithYAxis(Title="Profit in $10,000s")
+               |> Chart.WithLegend(Enabled=true, Docking=ChartTypes.Docking.Left)
