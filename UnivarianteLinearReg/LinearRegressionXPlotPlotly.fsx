@@ -24,6 +24,8 @@ open Suave
 open Suave.Http.Successful
 open Suave.Web
 
+Plotly.Signin PlotlyCredentials.UserAndKey
+
 let dataCulture = CultureInfo("en-US")
 let dataPath = Path.Combine(__SOURCE_DIRECTORY__, "UnivarianteLinearReg/data.csv")
 
