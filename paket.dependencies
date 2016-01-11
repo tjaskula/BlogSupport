@@ -7,3 +7,4 @@ nuget MathNet.Numerics.FSharp
 nuget Suave
 nuget XPlot.GoogleCharts
 nuget xplot.plotly
+github evelinag/ffplot ggplot.fs
