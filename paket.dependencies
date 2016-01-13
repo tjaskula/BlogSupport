@@ -4,6 +4,7 @@ nuget FSharp.Charting.Gtk
 nuget FSharp.Core
 nuget MathNet.Numerics.Data.Text
 nuget MathNet.Numerics.FSharp
+nuget RProvider
 nuget Suave
 nuget XPlot.GoogleCharts
 nuget xplot.plotly
