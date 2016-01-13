@@ -47,18 +47,69 @@ let dataPath = Path.Combine(__SOURCE_DIRECTORY__, "data.csv")
 
 // loads a matrix of 97x2
 let data = DelimitedReader.Read<double>(dataPath, false, ",", false, dataCulture)
-let x = data.Column(0).ToColumnMatrix().ToColumnWiseArray() |> List.ofArray
-let y = data.Column(1).ToColumnMatrix().ToColumnWiseArray() |> List.ofArray
+let x = data.Column(0).ToColumnMatrix()
+let y = data.Column(1).ToColumnMatrix()
 let df =
-    namedParams ["Population", x; "Profit" , y]
+    namedParams ["Population", x.ToColumnWiseArray() |> List.ofArray; "Profit" , y.ToColumnWiseArray() |> List.ofArray]
     |> R.data_frame
 
-let m = y.Length
+let m = y.RowCount
 
 // print scatter plot
 G.ggplot(df, G.aes(x="Population", y="Profit"))
 ++ R.xlab("Population of City in 10,000s")
 ++ R.ylab("Profit in $10,000s")
 ++ R.geom__point(namedParams["shape", box 4; "size", box 2; "colour", box "red"])
+++ R.theme__bw()
+++ sizeSettings()
+
+let theta = (vector [ 0.0; 0.0; ]).ToColumnMatrix()
+let xIntercept = x.InsertColumn(0, (Vector<double>.Build.Dense(m, 1.0)))
+let iterations = 1500
+let alpha = 0.01
+
+// the cost function
+let computeCost (x : Matrix<double>) (y : Matrix<double>) (theta : Matrix<float>) =
+    let h = xIntercept * theta
+    let squaredErrors = h.Subtract(y).PointwisePower(2.0);
+    let j = (1.0 / (2.0 * (m|> double))) * squaredErrors.ColumnSums();
+    j
+
+let cost = computeCost xIntercept y theta
+printfn "The intitial cost is: %f" (cost.[0])
+
+// gradient descent
+let gradientDescent (x : Matrix<double>) (y : Matrix<double>) (theta : Matrix<float>) alpha num_iters =
+    let m = y.RowCount |> float
+    let currentIter = 1
+    let rec walkGradient (theta : Matrix<float>) costH currentIter =
+        if currentIter <= num_iters then
+            let h = x * theta
+            let gradient = alpha * (1.0 / m) * (x.Transpose() * (h.Subtract(y)))
+            let newTheta = theta - gradient
+            let cost = computeCost x y newTheta
+            let newCostHistory = costH @ [cost.[0]]
+            walkGradient newTheta newCostHistory (currentIter + 1)
+        else
+           theta, costH
+    walkGradient theta [] currentIter
+
+let optimizedThetaCostHistory = gradientDescent xIntercept y theta alpha iterations
+let optimizedTheta = fst optimizedThetaCostHistory
+printfn "Theta found by gradient descent: %f %f" (optimizedTheta.[0, 0]) (optimizedTheta.[1, 0])
+
+// print scatter plot
+let linearRegression = xIntercept * optimizedTheta
+let df2 =
+        namedParams ["intercept", xIntercept.Column(1).ToArray(); "regression" , linearRegression.ToColumnWiseArray()]
+        |> R.data_frame
+
+// , namedParams["shape", box 4; "size", box 2; "colour", box "red"]
+let param = [| (namedParams["colour", "blue"]) |]
+G.ggplot()
+++ R.xlab("Population of City in 10,000s")
+++ R.ylab("Profit in $10,000s")
+++ R.geom__point(data=df, mapping=G.aes(x="Population", y="Profit"))
+++ R.geom__line(data=df2, mapping=G.aes(x="intercept", y="regression"), paramArray = param)
 ++ R.theme__bw()
 ++ sizeSettings()
