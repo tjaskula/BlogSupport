@@ -51,4 +51,4 @@ let m = y.Length
 
 // print scatter plot
 G.ggplot(df, G.aes(x="X", y="Value"))
-++ R.geom__line()
+++ R.geom__point()
