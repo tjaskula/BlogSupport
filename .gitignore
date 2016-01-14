@@ -187,3 +187,4 @@ NDependOut/
 
 # Paket bootstrap
 .paket/paket.exe
+paket-files/
