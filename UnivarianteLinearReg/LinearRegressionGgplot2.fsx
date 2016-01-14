@@ -112,11 +112,18 @@ G.ggplot(df, G.aes(x="Population", y="Profit"))
 ++ R.theme__bw()
 ++ sizeSettings()
 
+let df3 =
+        namedParams ["Population", x.ToColumnWiseArray(); "Profit" , y.ToColumnWiseArray()
+                     "intercept", xIntercept.Column(1).ToArray(); "regression" , linearRegression.ToColumnWiseArray()]
+                     |> R.data_frame
+
 let cols = R.c(namedParams["Line1", "red"; "Line2", "blue"])
-G.ggplot(df, G.aes(x="Population", y="Profit", colour="Line1"))
+G.ggplot(df3)
 ++ R.xlab("Population of City in 10,000s")
 ++ R.ylab("Profit in $10,000s")
-++ R.geom__point(namedParams["shape", box 4; "size", box 2; "colour", box "red"])
-++ R.geom__line(namedParams["data", box df2; "mapping", box (R.aes__string(namedParams["x", "intercept"; "y", "regression"; "colour", "Profit"])); "size", box 1])
-++ R.theme__bw()
-++ sizeSettings()
+++ R.geom__point(namedParams["mapping", box (R.aes__string(namedParams["x", "Population"; "y", "Profit"; "colour", "Line1"])); "shape", box 4; "size", box 2])
+++ R.geom__line(namedParams["mapping", box (R.aes__string(namedParams["x", "intercept"; "y", "regression"; "colour", "Line2"])); "size", box 1])
+++ R.scale__colour__manual(namedParams["name", box "Errors"; "values", box cols])
+//++ R.scale__colour__manual(namedParams["name", box "the colour"; "values", box(R.c(namedParams["red", "red"; "blue", "blue"])); "labels", box(R.c(namedParams["c1", "c1"; "c2", "c2"]))])
+//++ R.theme__bw()
+//++ sizeSettings()
