@@ -104,12 +104,10 @@ let df2 =
         namedParams ["intercept", xIntercept.Column(1).ToArray(); "regression" , linearRegression.ToColumnWiseArray()]
         |> R.data_frame
 
-// , namedParams["shape", box 4; "size", box 2; "colour", box "red"]
-let param = [| (namedParams["colour", "blue"]) |]
-G.ggplot()
+G.ggplot(df, G.aes(x="Population", y="Profit"))
 ++ R.xlab("Population of City in 10,000s")
 ++ R.ylab("Profit in $10,000s")
-++ R.geom__point(data=df, mapping=G.aes(x="Population", y="Profit"))
-++ R.geom__line(data=df2, mapping=G.aes(x="intercept", y="regression"), paramArray = param)
+++ R.geom__point(namedParams["shape", box 4; "size", box 2; "colour", box "red"])
+++ R.geom__line(namedParams["data", box df2; "mapping", box (G.aes(x="intercept", y="regression")); "colour", box "blue"; "size", box 1])
 ++ R.theme__bw()
 ++ sizeSettings()
