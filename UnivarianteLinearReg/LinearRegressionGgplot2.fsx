@@ -145,5 +145,7 @@ G.ggplot()
                                                     R.list(namedParams["linetype", R.c(0, 1); 
                                                                        "shape", R.c(4, R.as_numeric("NA"))])])])
 ++ R.theme__bw()
-++ R.theme(namedParams["legend.position", R.c(0,1); "legend.justification", R.c(0, 1)])
+++ R.theme(namedParams["legend.position", R.c(1, 0); "legend.justification", R.c(1, 0)])
 ++ sizeSettings()
+
+
