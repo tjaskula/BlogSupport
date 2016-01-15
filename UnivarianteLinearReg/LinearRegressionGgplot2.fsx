@@ -28,6 +28,8 @@ open RProvider.ggplot2
 open RProvider.datasets
 open ggplot
 
+open RDotNet
+
 fsi.AddPrinter(fun (synexpr:RDotNet.SymbolicExpression) -> synexpr.Print())
 
 let sizeSettings () =
@@ -38,6 +40,7 @@ let sizeSettings () =
 
 open System.IO
 open System.Globalization
+open System.Collections.Generic
 
 open MathNet.Numerics.LinearAlgebra
 open MathNet.Numerics.Data.Text
@@ -104,10 +107,10 @@ let df2 =
         namedParams ["intercept", xIntercept.Column(1).ToArray(); "regression" , linearRegression.ToColumnWiseArray()]
         |> R.data_frame
 
-G.ggplot(df, G.aes(x="Population", y="Profit"))
+G.ggplot(df, G.aes(x="Population", y="Profit", colour = "Training"))
 ++ R.xlab("Population of City in 10,000s")
 ++ R.ylab("Profit in $10,000s")
-++ R.geom__point(namedParams["shape", box 4; "size", box 2; "colour", box "red"])
+++ R.geom__point(namedParams["shape", box 4; "size", box 2])
 ++ R.geom__line(namedParams["data", box df2; "mapping", box (G.aes(x="intercept", y="regression")); "colour", box "blue"; "size", box 1])
 ++ R.theme__bw()
 ++ sizeSettings()
@@ -116,14 +119,46 @@ let df3 =
         namedParams ["Population", x.ToColumnWiseArray(); "Profit" , y.ToColumnWiseArray()
                      "intercept", xIntercept.Column(1).ToArray(); "regression" , linearRegression.ToColumnWiseArray()]
                      |> R.data_frame
+let data2 = Matrix<double>.Build.SameAs(data)
+data.CopyTo(data2)
+let data3 = data2.InsertColumn(2, xIntercept.Column(1)).InsertColumn(3, linearRegression.Column(0))
 
-let cols = R.c(namedParams["Line1", "red"; "Line2", "blue"])
-G.ggplot(df3)
+let dataWritePath = Path.Combine(__SOURCE_DIRECTORY__, "data2.csv")
+let headers = new System.Collections.Generic.List<string>(["Population"; "Profit"; "intercept"; "regression"])
+DelimitedWriter.Write(dataWritePath, data3, " ", headers)
+
+let dico = new Dictionary<string, obj>()
+dico.Add("x", "Population")
+dico.Add("y", "Profit")
+dico.Add("colour", "Line1")
+
+let cols = R.c(namedParams["'Training Data'", "red"; "'Linear Regression'", "blue"])
+
+G.ggplot()
 ++ R.xlab("Population of City in 10,000s")
 ++ R.ylab("Profit in $10,000s")
-++ R.geom__point(namedParams["mapping", box (R.aes__string(namedParams["x", "Population"; "y", "Profit"; "colour", "Line1"])); "shape", box 4; "size", box 2])
-++ R.geom__line(namedParams["mapping", box (R.aes__string(namedParams["x", "intercept"; "y", "regression"; "colour", "Line2"])); "size", box 1])
-++ R.scale__colour__manual(namedParams["name", box "Errors"; "values", box cols])
-//++ R.scale__colour__manual(namedParams["name", box "the colour"; "values", box(R.c(namedParams["red", "red"; "blue", "blue"])); "labels", box(R.c(namedParams["c1", "c1"; "c2", "c2"]))])
-//++ R.theme__bw()
-//++ sizeSettings()
+++ R.geom__point(
+    namedParams["data", box df;
+                "mapping", 
+                    box (
+                        G.aes(x = "Population", y = "Profit", colour = "'Training Data'")); 
+                "shape", box 4; 
+                "size", box 2])
+++ R.geom__line(
+    namedParams["data", box df2
+                "mapping", 
+                    box (
+                        G.aes(x = "intercept", y = "regression", colour = "'Linear Regression'")); 
+                    "size", box 1])
+++ R.scale__colour__manual(namedParams[
+                            "name", box ""; 
+                            "values", box cols;
+                            "breaks", box(R.c("Training Data", "Linear Regression"));
+                            "guide", box(R.guide__legend(namedParams["override.aes", R.aes__string(namedParams["fill", R.eval(expr = R.parse(namedParams["text", "NA"]))])]))])
+++ R.guides(namedParams["fill", R.guide__legend(namedParams["override.aes", R.list(namedParams["linetype", box 0; "shape", box "''"])]);
+                        "colour", R.guide__legend(namedParams["override.aes", 
+                                                    R.list(namedParams["linetype", R.c(0, 1); 
+                                                                       "shape", R.c(4, R.as_numeric("NA"))])])])
+++ R.theme__bw()
+++ R.theme(namedParams["legend.position", R.c(0,1); "legend.justification", R.c(0, 1)])
+++ sizeSettings()
