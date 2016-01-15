@@ -107,31 +107,16 @@ let df2 =
         namedParams ["intercept", xIntercept.Column(1).ToArray(); "regression" , linearRegression.ToColumnWiseArray()]
         |> R.data_frame
 
-G.ggplot(df, G.aes(x="Population", y="Profit", colour = "Training"))
-++ R.xlab("Population of City in 10,000s")
-++ R.ylab("Profit in $10,000s")
-++ R.geom__point(namedParams["shape", box 4; "size", box 2])
-++ R.geom__line(namedParams["data", box df2; "mapping", box (G.aes(x="intercept", y="regression")); "colour", box "blue"; "size", box 1])
-++ R.theme__bw()
-++ sizeSettings()
+//let data2 = Matrix<double>.Build.SameAs(data)
+//data.CopyTo(data2)
+//let data3 = data2.InsertColumn(2, xIntercept.Column(1)).InsertColumn(3, linearRegression.Column(0))
 
-let df3 =
-        namedParams ["Population", x.ToColumnWiseArray(); "Profit" , y.ToColumnWiseArray()
-                     "intercept", xIntercept.Column(1).ToArray(); "regression" , linearRegression.ToColumnWiseArray()]
-                     |> R.data_frame
-let data2 = Matrix<double>.Build.SameAs(data)
-data.CopyTo(data2)
-let data3 = data2.InsertColumn(2, xIntercept.Column(1)).InsertColumn(3, linearRegression.Column(0))
+//let dataWritePath = Path.Combine(__SOURCE_DIRECTORY__, "data2.csv")
+//let headers = new System.Collections.Generic.List<string>(["Population"; "Profit"; "intercept"; "regression"])
+//DelimitedWriter.Write(dataWritePath, data3, " ", headers)
 
-let dataWritePath = Path.Combine(__SOURCE_DIRECTORY__, "data2.csv")
-let headers = new System.Collections.Generic.List<string>(["Population"; "Profit"; "intercept"; "regression"])
-DelimitedWriter.Write(dataWritePath, data3, " ", headers)
 
-let dico = new Dictionary<string, obj>()
-dico.Add("x", "Population")
-dico.Add("y", "Profit")
-dico.Add("colour", "Line1")
-
+// print scatter plot with linear regression after gradient descent
 let cols = R.c(namedParams["'Training Data'", "red"; "'Linear Regression'", "blue"])
 
 G.ggplot()
