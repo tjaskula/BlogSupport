@@ -1,0 +1,269 @@
+submit()
+my_mean(c(4, 5, 10))
+submit()
+remainder(5)
+remainder(11, 5)
+remainder(divisor = 11, num = 5)
+remainder(4, div = 2)
+args(remainder)
+submit()
+evaluate(median, c(1.4, 3.6, 7.9, 8.8))
+evaluate(sd, c(1.4, 3.6, 7.9, 8.8))
+evaluate(function(x){x+1}, 6)
+evaluate(function(x){x[1]}, c(8, 4, 0))
+evaluate(function(x){x[3]}, c(8, 4, 0))
+evaluate(function(x){x[length(x)]}, c(8, 4, 0))
+?paste
+paste("Programming", "is","fun!")
+submit()
+paste("START ", ... , " STOP")
+submit()
+paste("START ", " STOP", ...)
+submit()
+telegram("fuck you")
+submit()
+mad_libs(place = "Place", adjective = "Adj", noun = "noun")
+submit()
+"I" %p% "love" %p% "R!"
+head(flags)
+dim(flags)
+class(flags)
+cls_list <- lapply(flags, class)
+cls_list
+class(cls_list)
+as.character(cls_list)
+cls_vect <- sapply(flags, class)
+class(cls_vect)
+sum(flags$orange)
+flag_colors <- flags[, 11:17]
+head(flag_colors)
+lapply(flag_colors, sum)
+sapply(flag_colors, sum)
+sapply(flag_colors, mean)
+flag_shapes <- flags[, 19:23]
+lapply(flag_shapes, range)
+shape_mat <- sapply(flag_shapes, range)
+shape_mat
+class(shape_mat)
+unique(c(3, 4, 5, 5, 5, 6, 6))
+unique_vals <- lapply(flags, unique)
+unique_vals
+lapply(unique_vals, length)
+sapply(unique_vals, length)
+sapply(flags, unique)
+lapply(unique_vals, function(elem) elem[2])
+viewinfo()
+sapply(flags, unique)
+vapply(flags, unique, numeric(1))
+ok()
+sapply(flags, class)
+vapply(flags, class, character(1))
+?tapply
+table(flags$landmass)
+table(flags$animate)
+tapply(flags$animate, flags$landmass, mean)
+tapply(flags$population, flags$red, summary)
+tapply(flags$population, flags$landmasses, summary)
+tapply(flags$population, flags$landmass, summary)
+ls()
+class(plants)
+dim(plants)
+nrow(plants)
+ncol(plants)
+object.size(plants)
+names(plants)
+head(plants)
+head(plants, 10)
+tail(plants, 15)
+summary(plants)
+table(plants$Active_Growth_Period)
+str(plants)
+?sample
+sample(1:6, 4, replace = TRUE)
+sample(1:20, 10)
+LETTERS
+sample(LETTERS)
+flips <- sample(c(0,1), 100, replace = TRUE, c(0.3, 0.7))
+flips
+sum(flips)
+?rbinom
+rbinom(1, size= 100, prob = 0.7)
+flips2 <- rbinom(1, size= 100, prob = 0.7)
+flips2 <- rbinom(100, size = 1, prob = 0.7)
+flips2
+sum(flips2)
+?rnorm
+rnorm(10)
+rnorm(100, sd = 25)
+rnorm(10, mean = 100, sd = 25)
+?rpois
+rpois(5, 10)
+my_pois <- replicate(100, rpois(5, 10))
+my_pois
+cm <- colMeans(my_pois)
+hist(cm)
+d1 <- Sys.Date()
+class(d1)
+unclass(d1)
+d1
+d2 <- as.Date("1969-01-01")
+unclass(d2)
+t1 <- Sys.time()
+t1
+class(t1)
+unclass(t1)
+t2 <- as.POSIXlt(Sys.time())
+class(t2)
+t2
+unclass(t2)
+str(unclass(t2))
+t2$min
+weekdays(d1)
+months(t1)
+quarters(t2)
+t3 <- "October 17, 1986 08:24"
+t4 <- strptime(t3, "%B %d, %Y %H:%M")
+t4
+class(t4)
+Sys.time() > t1
+Sys.time() - t1
+difftime(Sys.time(), t1, units = 'days')
+data(cars)
+?cars
+head(cars)
+plot(cars)
+?plot
+plot(x = cars$speed, y = cars$dist)
+plot(y = cars$speed, x = cars$dist)
+plot(x = cars$speed, y = cars$dist, "Speed")
+plot(x = cars$speed, y = cars$dist, xlab = "Speed")
+plot(x = cars$speed, y = cars$dist, xlab = "Speed", ylab = "Stopping")
+plot(x = cars$speed, y = cars$dist, ylab = "Stopping Distance")
+plot(x = cars$speed, y = cars$dist, xlab = "Speed", ylab = "Stopping Distance")
+plot(cars, main = "My Plot")
+plot(cars, main = "My Plot", title ="My Plot Subtitle")
+plot(cars, sub = "My Plot Subtitle")
+plot(cars, col = 2)
+plot(cars, xlim = c(10, 15))
+plot(cars, pch = 2)
+data(mtcars)
+?boxplot
+boxplot(mtcars, formula = mpg ~ cyl)
+boxplot(formula = mpg ~ cyl, data = mtcars)
+hist(mtcars$mpg)
+library(swirl)
+swirl()
+packageVersion("swirl")
+install_from_swirl("Getting and Cleaning Data")
+swirl()
+mydf <- read.csv(path2csv, stringAsFactors = FALSE)
+mydf <- read.csv(path2csv)
+mydf <- read.csv(path2csv, stringsAsFactors = FALSE)
+dim(mydf)
+head(mydf)
+play()
+nxt()
+library(dplyr)
+packageVersion("dplyr")
+cran <- tbl_df(mydf)
+rm("mydf")
+cran
+?select
+select(cran, ip_id, package, country)
+5:20
+select(cran, r_arch:country)
+select(cran, country:r_arch)
+cran
+select(cran, -time)
+select(cran, -X:size)
+select(cran, -(X:size))
+select(cran, -5:20)
+select(cran, -(5:20))
+-5:20
+-(5:20)
+select(cran, -(X:size))
+filter(cran, package == "swirl")
+filter(cran, r_version == "3.1.1", country == "US")
+?Comparison
+filter(cran, r_version <= "3.0.2", country == "IN")
+filter(cran, country == "US" | country == "IN")
+filter(cran, size > 100500, r_os == "linux-gnu")
+is.na(c(3, 5, NA, 10))
+!is.na(c(3, 5, NA, 10))
+filter(cran, !is.na(r_version))
+cran2 <- select(cran, size:ip_id)
+arrange(cran2, ip_id)
+arrange(cran2, desc(ip_id))
+arrange(cran2, package, ip_id)
+arrange(cran2, country, desc(r_version), ip_id)
+cran3 <- select(ip_id, package, size)
+cran3 <- select(cran, ip_id, package, size)
+cran3
+mutate(cran3, size_mb = size / 2^20)
+mutate(cran3, size_gb = size_mb / 2^10)
+mutate(cran3, size_mb = size / 2^20, size_gb = size_mb / 2^10)
+mutate(cran3, size_mb = size / 2^20, size_gb = size_mb / 2^10, correct_size = size = size + 1000)
+mutate(cran3, size_mb = size / 2^20, size_gb = size_mb / 2^10, correct_size = size + 1000)
+mutate(cran3, correct_size = size + 1000)
+summarize(cran, avg_bytes = mean(size))
+swirl()
+library(swirl)
+swirl()
+library(dplyr)
+cran <- tbl_df(mydf)
+rm("mydf")
+cran
+?group_by
+by_package <- group_by(cran, package)
+by_package
+summarize(by_package, mean(size))
+submit()
+pack_sum
+quantile(pack_sum$count, probs = 0.99)
+top_counts <- filter(pack_sum, pack_sum$count > 679)
+top_counts <- filter(pack_sum, count > 679)
+top_counts
+View(top_counts)
+ls()
+load(".RData")
+v
+.libPaths
+.libPaths()
+pwd()
+getwd()
+.libPaths("/Users/tjaskula/Documents/R/library")
+.libPaths()
+version()
+ver()
+R.Version()
+install.packages(ggplot2)
+install.packages("ggplot2")
+print-home
+getwd()
+ls()
+load(".RData")
+getwd()
+source("linearRegressionPlot.R", chdir = T)
+setwd("/Users/tjaskula/Documents/GitHub/BlogSupport/UnivarianteLinearReg/")
+source("linearRegressionPlot.R")
+library(ggplot2)#
+#
+df <- read.csv("data2.csv", sep=" ", header = TRUE, stringsAsFactors = FALSE)#
+df <- transform(df, Population = as.numeric(gsub(",",".", Population)))#
+df <- transform(df, Profit = as.numeric(gsub(",",".", Profit)))#
+df <- transform(df, intercept = as.numeric(gsub(",",".", intercept)))#
+df <- transform(df, regression = as.numeric(gsub(",",".", regression)))#
+#
+df1 <- df[,1:2]#
+df2 <- df[,3:4]#
+#
+cols <- c("Training Data"="red","Linear Regression"="blue")
+ggplot() +#
+  xlab("Population of City in 10,000s") +#
+  ylab("Profit in $10,000s") +#
+  geom_point(data = df1, aes_string(x="Population", y = "Profit", colour = "'Training Data'"), shape = 4, size = 2) +#
+  geom_line(data = df2, aes_string(x = "intercept", y = "regression", colour="'Linear Regression'"), size = 1) +#
+  scale_colour_manual(name="",values=cols, breaks=c("Training Data", "Linear Regression"), guide = guide_legend(override.aes=aes(fill=NA))) +#
+  guides(fill = guide_legend(override.aes = list(linetype = 0, shape=''))#
+         ,colour = guide_legend(override.aes = list(linetype=c(0, 1)#
+                                                     , shape=c(4, NA))))

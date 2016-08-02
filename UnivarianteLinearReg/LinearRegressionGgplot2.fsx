@@ -1,5 +1,7 @@
+System.Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
 #I "../packages/Deedle/lib/net40"
 #I "../packages/Deedle.RPlugin/lib/net40"
+#I "../packages/DynamicInterop/lib/net40"
 #I "../packages/RProvider/lib/net40"
 #I "../packages/R.NET.Community/lib/net40"
 #I "../packages/R.NET.Community.FSharp/lib/net40"
@@ -15,6 +17,7 @@
 #r "RDotNet.FSharp.dll"
 #r "Deedle.dll"
 #r "Deedle.RProvider.Plugin.dll"
+#r "DynamicInterop.dll"
 
 #r "MathNet.Numerics.dll"
 #r "MathNet.Numerics.FSharp.dll"
@@ -124,28 +127,26 @@ G.ggplot()
 ++ R.ylab("Profit in $10,000s")
 ++ R.geom__point(
     namedParams["data", box df;
-                "mapping", 
+                "mapping",
                     box (
-                        G.aes(x = "Population", y = "Profit", colour = "'Training Data'")); 
-                "shape", box 4; 
+                        G.aes(x = "Population", y = "Profit", colour = "'Training Data'"));
+                "shape", box 4;
                 "size", box 2])
 ++ R.geom__line(
     namedParams["data", box df2
-                "mapping", 
+                "mapping",
                     box (
-                        G.aes(x = "intercept", y = "regression", colour = "'Linear Regression'")); 
+                        G.aes(x = "intercept", y = "regression", colour = "'Linear Regression'"));
                     "size", box 1])
 ++ R.scale__colour__manual(namedParams[
-                            "name", box ""; 
+                            "name", box "";
                             "values", box cols;
                             "breaks", box(R.c("Training Data", "Linear Regression"));
                             "guide", box(R.guide__legend(namedParams["override.aes", R.aes__string(namedParams["fill", R.eval(expr = R.parse(namedParams["text", "NA"]))])]))])
 ++ R.guides(namedParams["fill", R.guide__legend(namedParams["override.aes", R.list(namedParams["linetype", box 0; "shape", box "''"])]);
-                        "colour", R.guide__legend(namedParams["override.aes", 
-                                                    R.list(namedParams["linetype", R.c(0, 1); 
+                        "colour", R.guide__legend(namedParams["override.aes",
+                                                    R.list(namedParams["linetype", R.c(0, 1);
                                                                        "shape", R.c(4, R.as_numeric("NA"))])])])
 ++ R.theme__bw()
 ++ R.theme(namedParams["legend.position", R.c(1, 0); "legend.justification", R.c(1, 0)])
 ++ sizeSettings()
-
-
