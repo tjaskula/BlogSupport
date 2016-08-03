@@ -32,6 +32,10 @@ open RProvider.datasets
 open ggplot
 
 open RDotNet
+open RProvider.graphics
+open RProvider.grDevices
+
+R.x11()
 
 fsi.AddPrinter(fun (synexpr:RDotNet.SymbolicExpression) -> synexpr.Print())
 
@@ -109,15 +113,6 @@ let linearRegression = xIntercept * optimizedTheta
 let df2 =
         namedParams ["intercept", xIntercept.Column(1).ToArray(); "regression" , linearRegression.ToColumnWiseArray()]
         |> R.data_frame
-
-//let data2 = Matrix<double>.Build.SameAs(data)
-//data.CopyTo(data2)
-//let data3 = data2.InsertColumn(2, xIntercept.Column(1)).InsertColumn(3, linearRegression.Column(0))
-
-//let dataWritePath = Path.Combine(__SOURCE_DIRECTORY__, "data2.csv")
-//let headers = new System.Collections.Generic.List<string>(["Population"; "Profit"; "intercept"; "regression"])
-//DelimitedWriter.Write(dataWritePath, data3, " ", headers)
-
 
 // print scatter plot with linear regression after gradient descent
 let cols = R.c(namedParams["'Training Data'", "red"; "'Linear Regression'", "blue"])
