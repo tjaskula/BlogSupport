@@ -188,3 +188,8 @@ NDependOut/
 # Paket bootstrap
 .paket/paket.exe
 paket-files/
+
+# R files
+.Rhistory
+.Rapp.history
+.RData
