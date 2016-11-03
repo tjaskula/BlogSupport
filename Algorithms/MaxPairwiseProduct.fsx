@@ -26,7 +26,7 @@ let findTwoMax l =
             |> removeFirst (fun e -> e = m)
             |> twoMaxIter (m :: o)
     twoMaxIter [] l 
-    |> List.map (fun e -> int64 e)
+    |> List.map int64
     |> List.reduce (*)
 
 let findTwoMaxFold l =
@@ -37,7 +37,7 @@ let findTwoMaxFold l =
                         [(List.max state); elem]
                     else state
                     ) [] 
-      |> List.map (fun e -> int64 e)
+      |> List.map int64
       |> List.reduce (*)
 
 let l1 = [7; 5; 14; 2; 8; 8; 10; 1; 2; 3]
@@ -60,3 +60,11 @@ l3 |> findTwoMax
 l4 |> Array.ofList |> getMaxPariwiseProduct
 l4 |> findTwoMaxFold
 l4 |> findTwoMax
+
+// randomized max
+open System
+let r = new Random(347)
+let n = 200001
+let l = [for i in 2..n do
+            yield r.Next(0, pown 10 5)]
+
