@@ -68,3 +68,12 @@ let n = 200001
 let l = [for i in 2..n do
             yield r.Next(0, pown 10 5)]
 
+#time          
+l |> Array.ofList |> getMaxPariwiseProduct
+#time
+#time
+l |> findTwoMaxFold
+#time
+#time
+l |> findTwoMax
+#time
