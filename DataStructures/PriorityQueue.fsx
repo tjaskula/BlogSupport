@@ -1,9 +1,25 @@
-namespace FSharpz.Collections
+//namespace FSharpz.Collections
+
+//module Mutable =
 
 open System
 open Microsoft.FSharp.Core
 
-type PriorityQueue<'T when 'T : comparison>(values: seq<'T>, isDescenfing: bool) =
+let private (|Greater|_|) descendent compareResult =
+    match compareResult with
+    | n when n < 0 && descendent  -> None
+    | n when n < 0 && not descendent  -> Some()
+    | 0 -> None
+    | n when n > 0 && descendent -> Some()
+    | n when n > 0 && not descendent -> None
+    | _ -> failwith "Impossible case for IComparable result"
+
+let private isGreater x y descendent =
+    match compare x y with
+    | Greater descendent _ -> true
+    | _ -> false
+
+type PriorityQueue<'T when 'T : comparison>(values: seq<'T>, isDescending: bool) =
     let heap : System.Collections.Generic.List<'T> = System.Collections.Generic.List<'T>(values)
 
     // by default this is the ascending comparer
@@ -22,7 +38,7 @@ type PriorityQueue<'T when 'T : comparison>(values: seq<'T>, isDescenfing: bool)
 
     let siftUp i =
         let mutable indx = i
-        while indx > 0 && heap.[parent indx] < heap.[indx] do
+        while indx > 0 && not (isGreater heap.[parent indx] heap.[indx] isDescending) do
             swap (parent indx) indx
             indx <- parent indx
 
@@ -64,8 +80,9 @@ type PriorityQueue<'T when 'T : comparison>(values: seq<'T>, isDescenfing: bool)
         size <- size + 1
         siftUp (size - 1)
 
+//module Tests =
 
-module PriorityQueue =
+//    open Mutable
 
-    let pMax = new PriorityQueue<int>([|3; 1; 4; 2|])
-    let pMin = new PriorityQueue<int>([|3; 1; 4; 2|], false)
+let pMax = new PriorityQueue<int>([|3; 1; 4; 2|])
+let pMin = new PriorityQueue<int>([|3; 1; 4; 2|], false)
