@@ -83,6 +83,5 @@ type PriorityQueue<'T when 'T : comparison>(values: seq<'T>, isDescending: bool)
 //module Tests =
 
 //    open Mutable
-
 let pMax = new PriorityQueue<int>([|3; 1; 4; 2|])
 let pMin = new PriorityQueue<int>([|3; 1; 4; 2|], false)
