@@ -19,11 +19,10 @@ let private isGreater x y descendent =
     | Greater descendent _ -> true
     | _ -> false
 
+let private isLower x y descendent = not (isGreater x y descendent)
+
 type PriorityQueue<'T when 'T : comparison>(values: seq<'T>, isDescending: bool) =
     let heap : System.Collections.Generic.List<'T> = System.Collections.Generic.List<'T>(values)
-
-    // by default this is the ascending comparer
-    let cFast = LanguagePrimitives.FastGenericComparer<'T>
     
     let mutable size = heap.Count
 
@@ -38,15 +37,15 @@ type PriorityQueue<'T when 'T : comparison>(values: seq<'T>, isDescending: bool)
 
     let siftUp i =
         let mutable indx = i
-        while indx > 0 && not (isGreater heap.[parent indx] heap.[indx] isDescending) do
+        while indx > 0 && isLower heap.[parent indx] heap.[indx] isDescending do
             swap (parent indx) indx
             indx <- parent indx
 
     let rec siftDown i =
         let l = leftChild i
         let r = rightChild i
-        let maxIndexLeft = if l < size && heap.[l] > heap.[i] then l else i
-        let maxIndex = if r < size && heap.[r] > heap.[maxIndexLeft] then r else maxIndexLeft
+        let maxIndexLeft = if l < size && isGreater heap.[l] heap.[i] isDescending then l else i
+        let maxIndex = if r < size && isGreater heap.[r] heap.[maxIndexLeft] isDescending then r else maxIndexLeft
         if i <> maxIndex then
             swap i maxIndex
             siftUp maxIndex
@@ -85,3 +84,22 @@ type PriorityQueue<'T when 'T : comparison>(values: seq<'T>, isDescending: bool)
 //    open Mutable
 let pMax = new PriorityQueue<int>([|3; 1; 4; 2|])
 let pMin = new PriorityQueue<int>([|3; 1; 4; 2|], false)
+
+[<CustomComparison; StructuralEquality>]
+type Point = { X: int; 
+               Y: int }
+                interface IComparable<Point> with
+                    member this.CompareTo other =
+                        compare this.Y other.Y
+                interface IComparable with
+                    member this.CompareTo(obj: obj) =
+                        match obj with
+                        | :? Point -> compare this.Y (unbox<Point> obj).Y
+                        | _ -> invalidArg "obj" "Must be of type Point"
+                        
+
+let p1 = {X = 10; Y = 1}
+let p2 = {X = 1; Y = 10}
+
+let pointMax = new PriorityQueue<Point>([|p1; p2|])
+let pointMin = new PriorityQueue<Point>([|p1; p2|], false)
