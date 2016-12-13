@@ -74,3 +74,16 @@ type PriorityQueue<'T when 'T : comparison>(values: seq<'T>, isDescending: bool)
 
 type Vertex = { Id: int; ShortestDistance: double; Edges: Edge list }
 and Edge = { Destination: Vertex; Distance: double }
+type Graph = { Vertices: Vertex list }
+
+let addEdge vertex e = { vertex with Edges = e::vertex.Edges }
+
+type Vertex with
+    member this.AddEdge = addEdge this
+
+let addVertex graph v = { graph with Vertices = v::graph.Vertices }
+let getVertices graph = graph.Vertices
+
+type Graph with
+    member this.AddVertex = addVertex this
+    member this.GetVertices = getVertices this
