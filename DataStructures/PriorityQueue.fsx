@@ -39,6 +39,20 @@ type PriorityQueue<'T when 'T : comparison>(values: seq<'T>, isDescending: bool)
             swap i maxIndex
             siftDown maxIndex
         else ()
+
+    let rec preOrderTraversal predicate indx =
+        if indx >= size then
+            None
+        else
+            let elem = heap.[indx]
+            if predicate(elem) then
+                Some(indx)
+            else
+                let leftChildIndx = leftChild indx
+                let rightChildIndex = rightChild indx
+                match preOrderTraversal predicate leftChildIndx with
+                | None -> preOrderTraversal predicate rightChildIndex
+                | found -> found 
     
     let build() =
         for i = size / 2 downto 0 do
@@ -72,9 +86,12 @@ type PriorityQueue<'T when 'T : comparison>(values: seq<'T>, isDescending: bool)
         size <- size + 1
         siftUp (size - 1)
 
+    member this.Traversal(predicate: 'T -> bool) =
+        preOrderTraversal predicate 0
+
 type Edge = { DestinationVertexId: int; Distance: double }
 
- [<CustomComparison; StructuralEquality>]
+[<CustomComparison; StructuralEquality>]
 type Vertex = { Id: int; ShortestDistance: double; Edges: Edge list }
                 interface IComparable<Vertex> with
                         member this.CompareTo other =
@@ -85,25 +102,22 @@ type Vertex = { Id: int; ShortestDistance: double; Edges: Edge list }
                         | :? Vertex -> compare this.ShortestDistance (unbox<Vertex> obj).ShortestDistance
                         | _ -> invalidArg "obj" "Must be of type Vertex"
 
+type Graph = { Vertices: Vertex list }
+
 let addEdge vertex e = { vertex with Edges = e::vertex.Edges }
 
 type Vertex with
     member this.AddEdge = addEdge this
 
-type Graph() =
-    
-    let mutable vertices: Map<int, Vertex> = Map.empty
-    let addVertex (v: Vertex) = vertices <- if vertices.ContainsKey(v.Id) then vertices else vertices.Add(v.Id, v)
-    let setSource vertexId = 
-        vertices <- match vertices.TryFind(vertexId) with
-                     | None -> vertices
-                     | Some(v) -> vertices.Add(v.Id, {v with ShortestDistance = 0.0 })
-        
+let addVertex graph v = { graph with Vertices = v::graph.Vertices }
+let getVertices graph = graph.Vertices
+let setSource vertexId graph = 
+    { Vertices = graph.Vertices
+                |> List.map (fun e -> if e.Id = vertexId then {e with ShortestDistance = 0.0 } else e) }
 
-    member this.AddVertex (v: Vertex) = addVertex v; this
-    member this.GetVertices () = vertices |> Map.toList |> List.map snd
-    member this.SetSource vertexId = setSource vertexId; this
-    member this.GetVertex vertexId = vertices.[vertexId]
+type Graph with
+    member this.AddVertex = addVertex this
+    member this.GetVertices () = getVertices this
 
 
 let rawGraph = Map.empty
@@ -123,16 +137,15 @@ let makeVertex vertexId edges =
       Edges = edges |> List.map makeEdge
     }
 
-let graph = (rawGraph
+let graph = rawGraph
             |> Map.map makeVertex
-            |> Map.fold (fun (graph: Graph) _ v -> graph.AddVertex(v)) (Graph())
-            ).SetSource 1
+            |> Map.fold (fun (graph: Graph) _ v -> graph.AddVertex(v)) { Vertices = [] }
+            |> setSource 1
 
 let pq = PriorityQueue<Vertex>(graph.GetVertices(), false)
 
-while not !pq.IsEmpty do
-    let vertex = pq.Dequeue()
-    for edge in vertex.Edges do
-        let destination = graph.GetVertex edge.DestinationVertexId
-        let newDistance = edge.Distance + vertex.ShortestDistance
-        
+//while not !pq.IsEmpty do
+//    let vertex = pq.Dequeue()
+//    for edge in vertex.Edges do
+//        let destinationId = edge.DestinationVertexId
+//        let newDistance = edge.Distance + vertex.ShortestDistance
