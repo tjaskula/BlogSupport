@@ -103,7 +103,7 @@ type PriorityQueue<'T when 'T : comparison>(values: seq<'T>, isDescending: bool)
 type Edge = { DestinationVertexId: int; Distance: double }
 
 [<CustomComparison; StructuralEquality>]
-type Vertex = { Id: int; ShortestDistance: double; Edges: Edge list }
+type Vertex = { Id: int; ShortestDistance: double; Edges: Edge list; Path: int list }
                 interface IComparable<Vertex> with
                         member this.CompareTo other =
                             compare this.ShortestDistance other.ShortestDistance
@@ -146,6 +146,7 @@ let makeVertex vertexId edges =
     { Id = vertexId;
       ShortestDistance = Double.PositiveInfinity;
       Edges = edges |> List.map makeEdge
+      Path = []
     }
 
 let graph = rawGraph
@@ -157,7 +158,7 @@ let pq = PriorityQueue<Vertex>(graph.GetVertices(), false)
 
 while not pq.IsEmpty do
     let vertex = pq.Dequeue()
-    printfn "Visiting node %i - value %f" vertex.Id vertex.ShortestDistance
+    printfn "Vertex '%i' accessed from : %s" vertex.Id (vertex.Path |> List.rev |> List.fold (fun state elem -> state + ", " + elem.ToString()) "")
     for edge in vertex.Edges do
         let destinationId = edge.DestinationVertexId
         match pq.TryFind (fun e -> e.Id = destinationId) with
@@ -165,7 +166,6 @@ while not pq.IsEmpty do
         | Some(indx, destination) ->
             let newDistance = edge.Distance + vertex.ShortestDistance
             if newDistance < destination.ShortestDistance then
-                let newDestination = { destination with ShortestDistance = newDistance }
+                let newDestination = { destination with ShortestDistance = newDistance; Path = destination.Id :: vertex.Path }
                 pq.Update indx newDestination
-                printfn "Updating node %i" newDestination.Id
             else ()
