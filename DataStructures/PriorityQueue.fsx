@@ -16,8 +16,8 @@ type PriorityQueue<'T when 'T : comparison>(values: seq<'T>, isDescending: bool)
         if shouldShrink then heap.RemoveRange(size, heap.Count - size - 1)
 
     let parent i = (i - 1) / 2
-    let leftChild i = 2 * i
-    let rightChild i = 2 * i + 1
+    let leftChild i = 2 * i + 1
+    let rightChild i = 2 * i + 2
 
     let swap i maxIndex =
         let temp = heap.[i]
@@ -78,7 +78,7 @@ type PriorityQueue<'T when 'T : comparison>(values: seq<'T>, isDescending: bool)
         siftDown 0
         result
 
-    member this.Enqueue(p: 'T) =
+    member this.Enqueue p =
         if heap.Count = size then
             heap.Add(p)
         else
@@ -86,8 +86,19 @@ type PriorityQueue<'T when 'T : comparison>(values: seq<'T>, isDescending: bool)
         size <- size + 1
         siftUp (size - 1)
 
-    member this.Traversal(predicate: 'T -> bool) =
-        preOrderTraversal predicate 0
+    member this.TryFind predicate =
+        match preOrderTraversal predicate 0 with
+        | None -> None
+        | Some(i) -> Some(i, heap.[i])
+
+    member this.Update indx v =
+        if indx < 0 || indx >= size then failwith "The index is out of range"
+        else
+            let old = heap.[indx]
+            heap.[indx] <- v
+            if isGreater v old then
+                siftUp(indx)
+            else siftDown(indx)
 
 type Edge = { DestinationVertexId: int; Distance: double }
 
@@ -144,8 +155,17 @@ let graph = rawGraph
 
 let pq = PriorityQueue<Vertex>(graph.GetVertices(), false)
 
-//while not !pq.IsEmpty do
-//    let vertex = pq.Dequeue()
-//    for edge in vertex.Edges do
-//        let destinationId = edge.DestinationVertexId
-//        let newDistance = edge.Distance + vertex.ShortestDistance
+while not pq.IsEmpty do
+    let vertex = pq.Dequeue()
+    printfn "Visiting node %i - value %f" vertex.Id vertex.ShortestDistance
+    for edge in vertex.Edges do
+        let destinationId = edge.DestinationVertexId
+        match pq.TryFind (fun e -> e.Id = destinationId) with
+        | None -> ()
+        | Some(indx, destination) ->
+            let newDistance = edge.Distance + vertex.ShortestDistance
+            if newDistance < destination.ShortestDistance then
+                let newDestination = { destination with ShortestDistance = newDistance }
+                pq.Update indx newDestination
+                printfn "Updating node %i" newDestination.Id
+            else ()
