@@ -169,3 +169,15 @@ while not pq.IsEmpty do
                 let newDestination = { destination with ShortestDistance = newDistance; Path = destination.Id :: vertex.Path }
                 pq.Update indx newDestination
             else ()
+
+// real use case
+// CA
+// starting point CA-127, Shoshone, CA 92384, États-Unis
+// nodeId: 12635
+// destination Lincoln Blvd, San Francisco, CA 94129, États-Unis
+// nodeId: 8419
+
+let s =[(0, 1, 0.002025); (0, 6, 0.005952); (1, 2, 0.014350)]
+s |> Seq.groupBy (fun (f, t, d) -> f)
+  |> Seq.map (fun (key, values) -> (key, values |> Seq.map (fun (k, v, z) -> z, v) |> Seq.toList))
+  |> Map.ofSeq
