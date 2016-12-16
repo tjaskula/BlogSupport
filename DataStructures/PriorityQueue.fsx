@@ -154,30 +154,60 @@ let graph = rawGraph
             |> Map.fold (fun (graph: Graph) _ v -> graph.AddVertex(v)) { Vertices = [] }
             |> setSource 1
 
-let pq = PriorityQueue<Vertex>(graph.GetVertices(), false)
+let shortestPath (graph: Graph) destinationId =
 
-while not pq.IsEmpty do
-    let vertex = pq.Dequeue()
-    printfn "Vertex '%i' accessed from : %s" vertex.Id (vertex.Path |> List.rev |> List.fold (fun state elem -> state + ", " + elem.ToString()) "")
-    for edge in vertex.Edges do
-        let destinationId = edge.DestinationVertexId
-        match pq.TryFind (fun e -> e.Id = destinationId) with
-        | None -> ()
-        | Some(indx, destination) ->
-            let newDistance = edge.Distance + vertex.ShortestDistance
-            if newDistance < destination.ShortestDistance then
-                let newDestination = { destination with ShortestDistance = newDistance; Path = destination.Id :: vertex.Path }
-                pq.Update indx newDestination
-            else ()
+    let pq = PriorityQueue<Vertex>(graph.GetVertices(), false)
+    let mutable dest = Option<Vertex>.None
+
+    while not pq.IsEmpty do
+        let vertex = pq.Dequeue()
+        if vertex.Id = destinationId then
+            dest <- Some(vertex)
+
+        //printfn "Vertex '%i' accessed from : %s" vertex.Id (vertex.Path |> List.rev |> List.fold (fun state elem -> state + ", " + elem.ToString()) "")
+        for edge in vertex.Edges do
+            let destinationId = edge.DestinationVertexId
+            match pq.TryFind (fun e -> e.Id = destinationId) with
+            | None -> ()
+            | Some(indx, destination) ->
+                let newDistance = edge.Distance + vertex.ShortestDistance
+                if newDistance < destination.ShortestDistance then
+                    let newDestination = { destination with ShortestDistance = newDistance; Path = destination.Id :: vertex.Path }
+                    pq.Update indx newDestination
+                else ()
 
 // real use case
 // CA
-// starting point CA-127, Shoshone, CA 92384, États-Unis
-// nodeId: 12635
-// destination Lincoln Blvd, San Francisco, CA 94129, États-Unis
-// nodeId: 8419
+// starting point 512 Partridge Ave, Bakersfield, CA 93309, États-Unis
+// nodeId: 1215934
+// destination US-101, San Francisco, CA 94129, États-Unis Golden Gate Bridge
+// nodeId: 1598609
 
-let s =[(0, 1, 0.002025); (0, 6, 0.005952); (1, 2, 0.014350)]
-s |> Seq.groupBy (fun (f, t, d) -> f)
-  |> Seq.map (fun (key, values) -> (key, values |> Seq.map (fun (k, v, z) -> z, v) |> Seq.toList))
-  |> Map.ofSeq
+Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
+
+let readLines filePath = System.IO.File.ReadLines(filePath)
+
+let lines = readLines "CARoadDistances.txt"
+
+let graphMap =
+    lines
+    |> Seq.map (fun l -> let a = l.Split()
+                         (int a.[1], int a.[2], float a.[3]))
+    |> Seq.groupBy (fun (f, t, d) -> f)
+    |> Seq.map (fun (key, values) -> (key, values |> Seq.map (fun (k, v, z) -> z, v) |> Seq.toList))
+    |> Map.ofSeq
+
+
+//let s =[(0, 1, 0.002025); (0, 6, 0.005952); (1, 2, 0.014350)]
+//s |> Seq.groupBy (fun (f, t, d) -> f)
+//  |> Seq.map (fun (key, values) -> (key, values |> Seq.map (fun (k, v, z) -> z, v) |> Seq.toList))
+//  |> Map.ofSeq
+
+let roadNetwork = graphMap
+                    |> Map.map makeVertex
+                    |> Map.fold (fun (graph: Graph) _ v -> graph.AddVertex(v)) { Vertices = [] }
+                    |> setSource 12635
+
+let arrival = shortestPath roadNetwork 12635
+
+let pq = PriorityQueue<Vertex>(roadNetwork.GetVertices(), false)
