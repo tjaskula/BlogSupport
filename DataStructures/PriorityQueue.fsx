@@ -222,17 +222,41 @@ let graphCoordinates =
     |> Seq.map (fun l -> let a = l.Split()
                          int a.[1], (float (a.[2].Insert(4, ".")), float (a.[3].Insert(2, "."))))
     |> Map.ofSeq
-
+#time
 let arrival = shortestPath roadNetwork 1598609
-arrival.Value.Path
-|> Seq.rev
-|> Seq.iteri (fun i e -> if i % 50 = 0 then printfn "%i" e )
+#time
+//arrival.Value.Path
+//|> Seq.rev
+//|> Seq.iteri (fun i e -> if i % 50 = 0 then printfn "%i" e )
 
-let outFile = new System.IO.StreamWriter("RoadData.txt")
-outFile.WriteLine("latitude,longitude")
-arrival.Value.Path
-|> Seq.rev
-|> Seq.iter (fun e -> outFile.WriteLine(sprintf "%f, %f" (snd graphCoordinates.[e]) (fst graphCoordinates.[e])))
+let writeData (arrival: Vertex option) (graphCoordinates: Map<int, (float * float)>) (filename: string) =
+    let outFile = new System.IO.StreamWriter(filename)
+    outFile.WriteLine("latitude,longitude")
+    arrival.Value.Path
+    |> Seq.rev
+    |> Seq.iter (fun e -> outFile.WriteLine(sprintf "%f, %f" (snd graphCoordinates.[e]) (fst graphCoordinates.[e])))
 
-outFile.Flush()
-outFile.Close()
+    outFile.Flush()
+    outFile.Close()
+
+writeData arrival graphCoordinates "RoadData.txt"
+
+// real use case
+// CA
+// starting point 1385 US-93, Jackpot, NV 89825, États-Unis
+// nodeId: 1810942
+// destination US-101, San Francisco, CA 94129, États-Unis Golden Gate Bridge
+// nodeId: 1598609
+
+let roadNetwork2 = graphMap
+                    |> Map.map makeVertex
+                    |> Map.fold (fun (graph: Dictionary<int, Vertex>) _ v -> graph.Add(v.Id, v); graph) (Dictionary<int, Vertex>())
+                    //|> setSource 1215934
+let start2 = roadNetwork2.[1810942]
+roadNetwork2.[1810942] <- {start2 with ShortestDistance = 0.0 }
+
+#time
+let arrival2 = shortestPath roadNetwork2 1598609
+#time
+
+writeData arrival2 graphCoordinates "RoadData2.txt"
