@@ -114,32 +114,32 @@ type Vertex = { Id: int; ShortestDistance: double; Edges: Edge list; Path: int l
                         | :? Vertex -> compare this.ShortestDistance (unbox<Vertex> obj).ShortestDistance
                         | _ -> invalidArg "obj" "Must be of type Vertex"
 
-type Graph = { Vertices: Vertex list }
+//type Graph = { Vertices: Vertex list }
 
 let addEdge vertex e = { vertex with Edges = e::vertex.Edges }
 
 type Vertex with
     member this.AddEdge = addEdge this
 
-let addVertex graph v = { graph with Vertices = v::graph.Vertices }
-let getVertices graph = graph.Vertices
-let setSource vertexId graph = 
-    { Vertices = graph.Vertices
-                |> List.map (fun e -> if e.Id = vertexId then {e with ShortestDistance = 0.0 } else e) }
+//let addVertex graph v = { graph with Vertices = v::graph.Vertices }
+//let getVertices graph = graph.Vertices
+//let setSource vertexId graph = 
+//    { Vertices = graph.Vertices
+//                |> List.map (fun e -> if e.Id = vertexId then {e with ShortestDistance = 0.0 } else e) }
 
-type Graph with
-    member this.AddVertex = addVertex this
-    member this.GetVertices () = getVertices this
+//type Graph with
+//    member this.AddVertex = addVertex this
+//    member this.GetVertices () = getVertices this
 
 
-let rawGraph = Map.empty
-                 .Add(1, [(9.0, 3); (7.0, 2); (14.0, 6)])
-                 .Add(2, [(7.0, 1); (10.0, 3); (15.0, 4)])
-                 .Add(3, [(9.0, 1); (2.0, 6); (11.0, 4); (10.0, 2)])
-                 .Add(4, [(15.0, 2); (11.0, 3); (6.0, 5)])
-                 .Add(5, [(6.0, 4); (9.0, 6)])
-                 .Add(6, [(14.0, 1); (2.0, 3); (9.0, 5)])
-
+//let rawGraph = Map.empty
+//                 .Add(1, [(9.0, 3); (7.0, 2); (14.0, 6)])
+//                 .Add(2, [(7.0, 1); (10.0, 3); (15.0, 4)])
+//                 .Add(3, [(9.0, 1); (2.0, 6); (11.0, 4); (10.0, 2)])
+//                 .Add(4, [(15.0, 2); (11.0, 3); (6.0, 5)])
+//                 .Add(5, [(6.0, 4); (9.0, 6)])
+//                 .Add(6, [(14.0, 1); (2.0, 3); (9.0, 5)])
+//
 let makeEdge (distance, destVertexId) =
     { DestinationVertexId = destVertexId; Distance = distance}
 
@@ -149,11 +149,28 @@ let makeVertex vertexId edges =
       Edges = edges |> List.map makeEdge
       Path = []
     }
+//
+//let graph = rawGraph
+//            |> Map.map makeVertex
+//            |> Map.fold (fun (graph: Graph) _ v -> graph.AddVertex(v)) { Vertices = [] }
+//            |> setSource 1
 
-let graph = rawGraph
-            |> Map.map makeVertex
-            |> Map.fold (fun (graph: Graph) _ v -> graph.AddVertex(v)) { Vertices = [] }
-            |> setSource 1
+
+//let pq = PriorityQueue<Vertex>(graph.GetVertices(), false)
+//
+//while not pq.IsEmpty do
+//    let vertex = pq.Dequeue()
+//    printfn "Visiting node %i - value %f" vertex.Id vertex.ShortestDistance
+//    for edge in vertex.Edges do
+//        let destinationId = edge.DestinationVertexId
+//        match pq.TryFind (fun e -> e.Id = destinationId) with
+//        | None -> ()
+//        | Some(indx, destination) ->
+//            let newDistance = edge.Distance + vertex.ShortestDistance
+//            if newDistance < destination.ShortestDistance then
+//                let newDestination = { destination with ShortestDistance = newDistance }
+//                pq.Update indx newDestination
+//            else ()
 
 let shortestPath (graph: Dictionary<int, Vertex>) destinationId =
 
