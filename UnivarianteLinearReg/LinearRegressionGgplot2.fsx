@@ -1,14 +1,14 @@
 System.Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
-#I "../packages/Deedle/lib/net40"
-#I "../packages/Deedle.RPlugin/lib/net40"
-#I "../packages/DynamicInterop/lib/net40"
-#I "../packages/RProvider/lib/net40"
-#I "../packages/R.NET.Community/lib/net40"
-#I "../packages/R.NET.Community.FSharp/lib/net40"
+#I "packages/Deedle/lib/net40"
+#I "packages/Deedle.RPlugin/lib/net40"
+#I "packages/DynamicInterop/lib/net40"
+#I "packages/RProvider/lib/net40"
+#I "packages/R.NET.Community/lib/net40"
+#I "packages/R.NET.Community.FSharp/lib/net40"
 
-#I "../packages/MathNet.Numerics/lib/net40/"
-#I "../packages/MathNet.Numerics.FSharp/lib/net40/"
-#I "../packages/MathNet.Numerics.Data.Text/lib/net40/"
+#I "packages/MathNet.Numerics/lib/net40/"
+#I "packages/MathNet.Numerics.FSharp/lib/net40/"
+#I "packages/MathNet.Numerics.Data.Text/lib/net40/"
 
 #r "RProvider.Runtime.dll"
 #r "RProvider.dll"
@@ -23,7 +23,7 @@ System.Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
 #r "MathNet.Numerics.FSharp.dll"
 #r "MathNet.Numerics.Data.Text.dll"
 
-#load "../paket-files/evelinag/ffplot/ggplot.fs"
+#load "paket-files/evelinag/ffplot/ggplot.fs"
 
 open Deedle
 open RProvider
