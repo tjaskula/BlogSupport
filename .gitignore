@@ -193,3 +193,5 @@ paket-files/
 .Rhistory
 .Rapp.history
 .RData
+
+.idea/*
