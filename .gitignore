@@ -194,4 +194,5 @@ paket-files/
 .Rapp.history
 .RData
 
-.idea/*
+.idea/
+.idea/.idea.TreeReduction/riderModule.iml
