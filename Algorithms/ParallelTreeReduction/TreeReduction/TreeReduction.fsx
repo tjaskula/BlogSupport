@@ -1,4 +1,3 @@
-
 type Tree<'T> =
   | Leaf of 'T
   | Node of Tree<'T> * Tree<'T>
@@ -17,4 +16,50 @@ let generateTree height =
   
   let nodes = 2 * height - 1  
   if height <= 0 then failwith "The tree cannot have the height of 0 or less"
-  else Node(generateTreeInternal (Node(Leaf 1, Leaf 2)) 1, generateTreeInternal (Node(Leaf 3, Leaf 4)) 1)
+  else generateTreeInternal (Leaf 1) 1
+  
+  
+type TreeVal<'T> =
+  | LeafVal of 'T
+  | NodeVal of TreeVal<'T> * 'T * TreeVal<'T>
+  
+  
+let rec reduceVal t f =
+  let getValue = function
+    | LeafVal v -> v
+    | NodeVal(_, v, _) -> v
+  
+  match t with
+  | Leaf v -> LeafVal(v)
+  | Node(l, r) ->
+    let leftVal, rightVal = (reduceVal l f, reduceVal r f)
+    NodeVal(leftVal, f (getValue leftVal) (getValue rightVal), rightVal)
+
+open System.Threading.Tasks
+ 
+let getValue = function
+  | LeafVal v -> v
+  | NodeVal(_, v, _) -> v
+   
+let rec unsweep t f =
+  match t with
+  | Leaf v -> LeafVal(v)
+  | Node(l, r) ->
+    let leftVal, rightVal = Task.Run(fun _ -> unsweep l f, unsweep r f).Result
+    NodeVal(leftVal, f (getValue leftVal) (getValue rightVal), rightVal)
+    
+let rec downsweep t v0 f =
+  match t with 
+  | LeafVal v -> Leaf(f v0 v)
+  | NodeVal (l, _, r) ->
+    let left, right = Task.Run(fun _ -> downsweep l v0 f, downsweep r (f v0 (getValue l)) f).Result
+    Node(left, right)
+
+let rec prepend x = function 
+  | Leaf v -> Node(Leaf x, Leaf v)
+  | Node (l, r) -> Node(prepend x l, r)
+    
+let scanLeft t v0 f =
+  let tVal = unsweep t f
+  let scan = downsweep tVal v0 f
+  prepend v0 scan
