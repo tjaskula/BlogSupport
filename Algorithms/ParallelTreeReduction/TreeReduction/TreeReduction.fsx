@@ -41,18 +41,24 @@ let getValue = function
   | LeafVal v -> v
   | NodeVal(_, v, _) -> v
    
-let rec unsweep t f =
+let rec upsweep t f =
   match t with
   | Leaf v -> LeafVal(v)
   | Node(l, r) ->
-    let leftVal, rightVal = Task.Run(fun _ -> unsweep l f, unsweep r f).Result
+    let leftT = Task.Run(fun _ -> upsweep l f)
+    let rightT = Task.Run(fun _ -> upsweep r f)
+    Task.WaitAll(leftT, rightT)
+    let leftVal, rightVal = leftT.Result, rightT.Result
     NodeVal(leftVal, f (getValue leftVal) (getValue rightVal), rightVal)
     
 let rec downsweep t v0 f =
   match t with 
   | LeafVal v -> Leaf(f v0 v)
   | NodeVal (l, _, r) ->
-    let left, right = Task.Run(fun _ -> downsweep l v0 f, downsweep r (f v0 (getValue l)) f).Result
+    let leftT = Task.Run(fun _ -> downsweep l v0 f)
+    let rightT = Task.Run(fun _ -> downsweep r (f v0 (getValue l)) f)
+    Task.WaitAll(leftT, rightT)
+    let left, right = leftT.Result, rightT.Result
     Node(left, right)
 
 let rec prepend x = function 
@@ -60,6 +66,6 @@ let rec prepend x = function
   | Node (l, r) -> Node(prepend x l, r)
     
 let scanLeft t v0 f =
-  let tVal = unsweep t f
+  let tVal = upsweep t f
   let scan = downsweep tVal v0 f
   prepend v0 scan
